@@ -1,0 +1,56 @@
+random_seed: 42
+dataset_config {
+  data_sources {
+    label_directory_path: "/workspace/ssd_train_2021-10-05-13:54:16/data/drone_data_split/training/labels"
+    image_directory_path: "/workspace/ssd_train_2021-10-05-13:54:16/data/drone_data_split/training/images"
+  }
+  target_class_mapping {
+    key: "drone"
+    value: "drone"
+  }
+  validation_data_sources {
+    label_directory_path: "/workspace/ssd_train_2021-10-05-13:54:16/data/drone_data_split/val/labels"
+    image_directory_path: "/workspace/ssd_train_2021-10-05-13:54:16/data/drone_data_split/val/images"
+  }
+  include_difficult_in_training: true
+}
+augmentation_config {
+  output_width: 300
+  output_height: 300
+  output_channel: 3
+}
+training_config {
+  batch_size_per_gpu: 16
+  num_epochs: 100
+  learning_rate {
+    soft_start_annealing_schedule {
+      min_learning_rate: 5e-05
+      max_learning_rate: 0.02
+      soft_start: 0.15
+      annealing: 0.8
+    }
+  }
+  regularizer {
+    type: L1
+    weight: 3e-05
+  }
+}
+eval_config {
+  validation_period_during_training: 2
+  batch_size: 16
+  matching_iou_threshold: 0.5
+}
+nms_config {
+  confidence_threshold: 0.01
+  clustering_iou_threshold: 0.6
+  top_k: 200
+}
+ssd_config {
+  aspect_ratios_global: "[1.0, 2.0, 0.5, 3.0, 1.0/3.0]"
+  scales: "[0.05, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85]"
+  two_boxes_for_ar1: true
+  variances: "[0.1, 0.1, 0.2, 0.2]"
+  arch: "resnet"
+  nlayers: 18
+  freeze_blocks: 0
+}

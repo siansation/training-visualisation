@@ -1,0 +1,76 @@
+dataset_config {
+  data_sources {
+    label_directory_path: "/workspace/yolov4_train_2021-11-19-08:28:24/data/combine_data_split/training/labels"
+    image_directory_path: "/workspace/yolov4_train_2021-11-19-08:28:24/data/combine_data_split/training/images"
+  }
+  target_class_mapping {
+    key: "drone"
+    value: "drone"
+  }
+  validation_data_sources {
+    label_directory_path: "/workspace/yolov4_train_2021-11-19-08:28:24/data/combine_data_split/val/labels"
+    image_directory_path: "/workspace/yolov4_train_2021-11-19-08:28:24/data/combine_data_split/val/images"
+  }
+  include_difficult_in_training: true
+}
+augmentation_config {
+  hue: 0.1
+  saturation: 1.5
+  exposure: 1.5
+  horizontal_flip: 0.5
+  jitter: 0.3
+  output_width: 960
+  output_height: 544
+  mosaic_prob: 0.5
+  mosaic_min_ratio: 0.2
+}
+training_config {
+  batch_size_per_gpu: 16
+  num_epochs: 100
+  learning_rate {
+    soft_start_cosine_annealing_schedule {
+      max_learning_rate: 0.0001
+      soft_start: 0.3
+      min_learning_rate: 1e-07
+    }
+  }
+  regularizer {
+    type: L1
+    weight: 3e-05
+  }
+  optimizer {
+    adam {
+      epsilon: 1e-07
+      beta1: 0.9
+      beta2: 0.999
+    }
+  }
+  checkpoint_interval: 2
+  pretrain_model_path: "/workspace/yolov4_train_2021-11-19-08:28:24/pretrained_model/resnet_18.hdf5"
+}
+eval_config {
+  average_precision_mode: INTEGRATE
+  batch_size: 16
+  matching_iou_threshold: 0.5
+}
+nms_config {
+  confidence_threshold: 0.5
+  clustering_iou_threshold: 0.7
+  top_k: 200
+}
+yolov4_config {
+  big_anchor_shape: "[(132.60, 35.34), (74.10, 63.89), (228.15, 72.05)]"
+  mid_anchor_shape: "[(46.80, 14.95), (42.90, 37.38), (78.00, 22.43)]"
+  small_anchor_shape: "[(21.45, 13.59), (31.20, 10.20), (29.25, 22.43)]"
+  box_matching_iou: 0.5
+  arch: "resnet"
+  nlayers: 18
+  arch_conv_blocks: 2
+  loss_loc_weight: 0.8
+  loss_neg_obj_weights: 100.0
+  loss_class_weights: 0.5
+  big_grid_xy_extend: 0.05
+  mid_grid_xy_extend: 0.1
+  small_grid_xy_extend: 0.2
+}
+random_seed: 42
